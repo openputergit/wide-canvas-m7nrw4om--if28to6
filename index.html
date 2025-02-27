@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Job Matching Tool - College Placement Portal</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #c6e4fd, #e2f0fd);
+            min-height: 100vh;
+        }
+        
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+        
+        .glassmorphism-navbar {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .glassmorphism-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .glassmorphism-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.15);
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #49a3d6, #3978a8);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3978a8, #49a3d6);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(73, 163, 214, 0.3);
+        }
+        
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(73, 163, 214, 0.5);
+            color: #3978a8;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline:hover {
+            background: rgba(73, 163, 214, 0.1);
+            border-color: #3978a8;
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, rgba(73, 163, 214, 0.2) 0%, rgba(73, 163, 214, 0.3) 100%);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        
+        .upload-area {
+            border: 2px dashed rgba(73, 163, 214, 0.5);
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .upload-area:hover {
+            border-color: #49a3d6;
+            background: rgba(73, 163, 214, 0.05);
+        }
+        
+        /* Loading animation */
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-bottom-color: #49a3d6;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(to right, #49a3d6, #3978a8);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .notification {
+            animation: slideInRight 0.5s ease forwards;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .tab {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid #49a3d6;
+            color: #3978a8;
+        }
+        
+        .tooltip {
+            position: relative;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Webcam container styles */
+        .webcam-container {
+            position: relative;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        /* Record button pulse animation */
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+            }
+        }
+
+        /* Interview feedback meter */
+        .meter-container {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .meter-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="glassmorphism-navbar sticky top-0 w-full z-10">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="bi bi-briefcase-fill text-sky-600 text-2xl"></i>
+                <h1 class="text-xl font-bold text-sky-800">College Placement Portal</h1>
+            </div>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#" class="text-sky-700 hover:text-sky-900"><i class="bi bi-house-door mr-1"></i> Home</a>
+                <a href="#" class="text-sky-700 hover:text-sky-900"><i class="bi bi-search mr-1"></i> Jobs</a>
+                <a href="#" class="text-sky-700 hover:text-sky-900"><i class="bi bi-bell mr-1"></i> Notifications</a>
+                <a href="#" class="text-sky-700 hover:text-sky-900"><i class="bi bi-person-circle mr-1"></i> Profile</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-sky-700">
+                    <i class="bi bi-list text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden px-4 pb-4">
+            <a href="#" class="block py-2 text-sky-700 hover:text-sky-900"><i class="bi bi-house-door mr-1"></i> Home</a>
+            <a href="#" class="block py-2 text-sky-700 hover:text-sky-900"><i class="bi bi-search mr-1"></i> Jobs</a>
+            <a href="#" class="block py-2 text-sky-700 hover:text-sky-900"><i class="bi bi-bell mr-1"></i> Notifications</a>
+            <a href="#" class="block py-2 text-sky-700 hover:text-sky-900"><i class="bi bi-person-circle mr-1"></i> Profile</a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="mb-10 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold text-sky-800 mb-3">AI Job Matching Tool</h1>
+            <p class="text-sky-700 max-w-3xl mx-auto">Find the perfect job match for your resume using our advanced AI algorithm designed specifically for college placement</p>
+        </header>
+        
+        <main>
+            <!-- Tabs -->
+            <div class="mb-8 flex justify-center overflow-x-auto">
+                <div class="glassmorphism inline-flex rounded-full overflow-hidden">
+                    <button id="match-tab" class="tab active px-4 sm:px-6 py-3 text-sky-800 font-medium">
+                        <i class="bi bi-search mr-1 sm:mr-2"></i><span class="hidden sm:inline">Match Jobs</span><span class="inline sm:hidden">Match</span>
+                    </button>
+                    <button id="build-tab" class="tab px-4 sm:px-6 py-3 text-sky-600 font-medium">
+                        <i class="bi bi-file-earmark-text mr-1 sm:mr-2"></i><span class="hidden sm:inline">Resume Builder</span><span class="inline sm:hidden">Resume</span>
+                    </button>
+                    <button id="interview-tab" class="tab px-4 sm:px-6 py-3 text-sky-600 font-medium">
+                        <i class="bi bi-camera-video mr-1 sm:mr-2"></i><span class="hidden sm:inline">Mock Interview</span><span class="inline sm:hidden">Interview</span>
+                    </button>
+                    <button id="dashboard-tab" class="tab px-4 sm:px-6 py-3 text-sky-600 font-medium">
+                        <i class="bi bi-graph-up mr-1 sm:mr-2"></i><span class="hidden sm:inline">Dashboard</span><span class="inline sm:hidden">Stats</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Match Jobs Tab -->
+            <div id="match-section">
+                <div class="glassmorphism p-6 md:p-10 mb-10">
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-semibold text-sky-800 mb-4">Upload Your Resume</h2>
+                        <p class="text-sky-700 mb-6">Our AI will analyze your resume and match it with suitable job opportunities</p>
+                        
+                        <div id="upload-container" class="upload-area rounded-lg p-8 text-center cursor-pointer">
+                            <i class="bi bi-file-earmark-text text-5xl text-sky-600 mb-4"></i>
+                            <h3 class="text-xl font-medium text-sky-700 mb-2">Drag and drop your resume here</h3>
+                            <p class="text-sky-600 mb-4">or</p>
+                            <button id="browse-btn" class="btn-primary text-white px-5 py-2 rounded-full hover:shadow-lg">
+                                Browse Files
+                            </button>
+                            <input type="file" id="file-input" class="hidden" accept=".pdf,.doc,.docx">
+                            <p class="text-sm text-sky-500 mt-4">Accepted formats: PDF, DOC, DOCX</p>
+                        </div>
+                    </div>
+                    
+                    <div id="uploaded-file" class="hidden glassmorphism-card p-4 mb-6 flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="bi bi-file-earmark-text text-2xl text-sky-600 mr-3"></i>
+                            <div>
+                                <p id="file-name" class="font-medium text-sky-800"></p>
+                                <p id="file-size" class="text-sm text-sky-600"></p>
+                            </div>
+                        </div>
+                        <button id="remove-file" class="text-red-500 hover:text-red-700">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <div class="mb-4 md:mb-0">
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="notification-opt" class="w-4 h-4 accent-sky-600">
+                                <label for="notification-opt" class="text-sky-700">Receive job notifications by email</label>
+                            </div>
+                        </div>
+                        <button id="analyze-btn" class="btn-primary text-white px-8 py-3 rounded-full text-lg font-medium hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            Analyze & Find Matches
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="loading" class="hidden glassmorphism p-10 text-center">
+                    <span class="loader mb-6"></span>
+                    <p class="text-sky-700 font-medium mb-4">Analyzing your resume and finding the best job matches...</p>
+                    <div class="max-w-md mx-auto">
+                        <div class="flex justify-between text-sm text-sky-600 mb-2">
+                            <span>Analyzing skills</span>
+                            <span id="progress-percentage">45%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progress-bar-fill" class="progress-bar-fill" style="width: 45%"></div>
+                        </div>
+                        <p class="text-sm text-sky-600 mt-4">This may take a moment as our AI thoroughly analyzes your resume</p>
+                    </div>
+                </div>
+                
+                <div id="results-container" class="hidden">
+                    <h2 class="text-2xl font-semibold text-sky-800 mb-6">Job Matches Based on Your Resume</h2>
+                    
+                    <div class="mb-6 p-5 glassmorphism">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                            <h3 class="text-xl font-medium text-sky-700">Resume Analysis</h3>
+                            <div class="flex items-center mt-2 md:mt-0">
+                                <span class="text-sm text-sky-800 mr-2">Match Score:</span>
+                                <div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                    <div id="overall-score" class="h-full bg-gradient-to-r from-sky-400 to-sky-600" style="width: 75%"></div>
+                                </div>
+                                <span class="ml-2 text-sky-800 font-medium" id="overall-score-text">75%</span>
+                                <button class="ml-4 tooltip">
+                                    <i class="bi bi-info-circle text-sky-600"></i>
+                                    <span class="tooltip-text text-xs">Overall score is calculated based on your skills, experience, and education matching with available job positions.</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="skills-container" class="flex flex-wrap gap-2 mb-4">
+                            <span class="px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-sm">Loading skills...</span>
+                        </div>
+                        <div id="resume-analysis" class="text-sky-700">
+                            <p>Analyzing your qualifications and experience...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Filter and Sort -->
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                        <div class="mb-4 md:mb-0">
+                            <span class="text-sky-700">Filter by:</span>
+                            <div class="inline-flex rounded-md overflow-hidden ml-2 glassmorphism">
+                                <button class="px-3 py-1 text-sky-700 bg-white/30">All</button>
+                                <button class="px-3 py-1 text-sky-700">Remote</button>
+                                <button class="px-3 py-1 text-sky-700">On-site</button>
+                            </div>
+                        </div>
+                        <div class="inline-flex items-center">
+                            <span class="text-sky-700 mr-2">Sort by:</span>
+                            <select class="bg-white/30 border border-sky-200 text-sky-700 rounded-md px-3 py-1">
+                                <option value="match">Match Score</option>
+                                <option value="recent">Most Recent</option>
+                                <option value="salary">Salary Range</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="job-matches" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Job matches will be populated here -->
+                    </div>
+                    
+                    <div class="text-center mt-8">
+                        <button class="btn-outline px-6 py-2 rounded-full">
+                            Load More Jobs <i class="bi bi-chevron-down ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="no-results" class="hidden glassmorphism p-10 text-center">
+                    <i class="bi bi-search text-5xl text-sky-400 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-sky-800 mb-2">No Matching Jobs Found</h3>
+                    <p class="text-sky-600 mb-6">We couldn't find any jobs matching your resume. Try uploading an updated resume or check back later for new opportunities.</p>
+                    <div class="flex flex-col md:flex-row justify-center space-y-3 md:space-y-0 md:space-x-4">
+                        <button id="try-again-btn" class="btn-primary text-white px-6 py-2 rounded-full hover:shadow-lg">
+                            Try Again
+                        </button>
+                        <button id="build-resume-btn" class="btn-outline px-6 py-2 rounded-full">
+                            Build ATS-Friendly Resume
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Resume Builder Tab -->
+            <div id="builder-section" class="hidden">
+                <div class="glassmorphism p-6 md:p-10 mb-10">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-semibold text-sky-800 mb-4">AI Resume Builder</h2>
+                        <p class="text-sky-700 mb-2">Create an ATS-friendly resume that will get you noticed by employers</p>
+                        <div class="bg-sky-100/50 border-l-4 border-sky-500 p-3 rounded">
+                            <p class="text-sky-800"><i class="bi bi-lightbulb mr-1"></i> Our AI will help optimize your resume for Applicant Tracking Systems (ATS) to increase your chances of getting interviews.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="glassmorphism-card p-5">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 flex items-center justify-center rounded-full bg-sky-100 text-sky-600 mr-3">
+                                    <i class="bi bi-1-circle-fill text-xl"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-sky-800">Basic Information</h3>
+                            </div>
+                            <p class="text-sky-700 mb-4">Fill in your personal and contact information</p>
+                            <a href="#personal-info" class="inline-block btn-primary text-white px-4 py-2 rounded-lg text-center w-full">
+                                Get Started
+                            </a>
+                        </div>
+                        
+                        <div class="glassmorphism-card p-5">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 flex items-center justify-center rounded-full bg-sky-100 text-sky-600 mr-3">
+                                    <i class="bi bi-2-circle-fill text-xl"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-sky-800">Experience & Skills</h3>
+                            </div>
+                            <p class="text-sky-700 mb-4">Add your work history and key skills</p>
+                            <a href="#experience" class="inline-block btn-outline px-4 py-2 rounded-lg text-center w-full">
+                                Continue
+                            </a>
+                        </div>
+                        
+                        <div class="glassmorphism-card p-5">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 flex items-center justify-center rounded-full bg-sky-100 text-sky-600 mr-3">
+                                    <i class="bi bi-3-circle-fill text-xl"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-sky-800">AI Optimization</h3>
+                            </div>
+                            <p class="text-sky-700 mb-4">Our AI will enhance your resume for ATS</p>
+                            <a href="#optimization" class="inline-block btn-outline px-4 py-2 rounded-lg text-center w-full">
+                                Finalize
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div id="personal-info" class="pt-4">
+                        <h3 class="text-xl font-semibold text-sky-800 mb-4">Personal Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sky-700 mb-2" for="full-name">Full Name</label>
+                                <input type="text" id="full-name" class="w-full bg-white/40 border border-sky-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                            <div>
+                                <label class="block text-sky-700 mb-2" for="email">Email Address</label>
+                                <input type="email" id="email" class="w-full bg-white/40 border border-sky-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                            <div>
+                                <label class="block text-sky-700 mb-2" for="phone">Phone Number</label>
+                                <input type="tel" id="phone" class="w-full bg-white/40 border border-sky-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                            <div>
+                                <label class="block text-sky-700 mb-2" for="location">Location</label>
+                                <input type="text" id="location" class="w-full bg-white/40 border border-sky-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <label class="block text-sky-700 mb-2" for="summary">Professional Summary</label>
+                            <textarea id="summary" rows="4" class="w-full bg-white/40 border border-sky-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"></textarea>
+                            <div class="mt-2 flex justify-end">
+                                <button class="text-sky-600 px-4 py-1 rounded border border-sky-200 hover:bg-sky-50">
+                                    <i class="bi bi-magic mr-1"></i> AI Generate
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 flex justify-end">
+                            <button class="btn-primary text-white px-6 py-2 rounded-lg">
+                                Save & Continue <i class="bi bi-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mock Interview Tab -->
+            <div id="interview-section" class="hidden">
+                <div class="glassmorphism p-6 md:p-10 mb-10">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-semibold text-sky-800 mb-4">AI Mock Interview</h2>
+                        <p class="text-sky-700 mb-2">Practice your interview skills with AI-powered feedback and analysis</p>
+                        <div class="bg-sky-100/50 border-l-4 border-sky-500 p-3 rounded">
+                            <p class="text-sky-800"><i class="bi bi-lightbulb mr-1"></i> Our AI will simulate a real interview experience and provide instant feedback on your responses, body language, and communication skills.</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Interview Settings -->
+                        <div class="glassmorphism-card p-6">
+                            <h3 class="text-lg font-semibold text-sky-800 mb-4">Interview Settings</h3>
+                            
+                            <div class="mb-4">
+                                <label class="block text-sky-700 mb-2" for="job-position">Job Position</label>
+                                <select id="job-position" class="w-full bg-white/40 border border-sky-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                    <option value="">Select a position</option>
+                                    <option value="software-engineer">Software Engineer</option>
+                                    <option value="data-analyst">Data Analyst</option>
+                                    <option value="product-manager">Product Manager</option>
+                                    <option value="marketing-specialist">Marketing Specialist</option>
+                                    <option value="financial-analyst">Financial Analyst</option>
+                                    <option value="hr-specialist">HR Specialist</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-sky-700 mb-2" for="interview-type">Interview Type</label>
+                                <select id="interview-type" class="w-full bg-white/40 border border-sky-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                    <option value="behavioral">Behavioral Interview</option>
+                                    <option value="technical">Technical Interview</option>
+                                    <option value="hr">HR Interview</option>
+                                    <option value="case-study">Case Study Interview</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-sky-700 mb-2" for="difficulty-level">Difficulty Level</label>
+                                <select id="difficulty-level" class="w-full bg-white/40 border border-sky-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                    <option value="beginner">Beginner</option>
+                                    <option value="intermediate" selected>Intermediate</option>
+                                    <option value="advanced">Advanced</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-sky-700 mb-2" for="interview-duration">Duration (minutes)</label>
+                                <select id="interview-duration" class="w-full bg-white/40 border border-sky-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                                    <option value="10">10 minutes</option>
+                                    <option value="15" selected>15 minutes</option>
+                                    <option value="20">20 minutes</option>
+                                    <option value="30">30 minutes</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <input type="checkbox" id="enable-feedback" class="w-4 h-4 accent-sky-600" checked>
+                                    <label for="enable-feedback" class="text-sky-700">Real-time AI feedback</label>
+                                </div>
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <input type="checkbox" id="enable-recording" class="w-4 h-4 accent-sky-600" checked>
+                                    <label for="enable-recording" class="text-sky-700">Record interview for review</label>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="enable-tips" class="w-4 h-4 accent-sky-600" checked>
+                                    <label for="enable-tips" class="text-sky-700">Show interview tips</label>
+                                </div>
+                            </div>
+                            
+                            <button id="start-interview-btn" class="btn-primary text-white px-6 py-3 rounded-full w-full text-lg font-medium hover:shadow-lg">
+                                <i class="bi bi-play-fill mr-2"></i>Start Mock Interview
+                            </button>
+                        </div>
+
+                        <!-- Interview Tips -->
+                        <div class="glassmorphism-card p-6">
+                            <h3 class="text-lg font-semibold text-sky-800 mb-4">Interview Tips</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-sky-100 text-sky-600 mr-3 flex-shrink-0">
+                                        <i class="bi bi-camera-video"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sky-800 font-medium">Camera Position</p>
+                                        <p class="text-sky-600 text-sm">Position your camera at eye level and ensure your face is well-lit.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-sky-100 text-sky-600 mr-3 flex-shrink-0">
+                                        <i class="bi bi-emoji-smile"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sky-800 font-medium">Body Language</p>
+                                        <p class="text-sky-600 text-sm">Maintain good posture, make eye contact with the camera, and smile naturally when appropriate.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-sky-100 text-sky-600 mr-3 flex-shrink-0">
+                                        <i class="bi bi-mic"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sky-800 font-medium">Speaking Clearly</p>
+                                        <p class="text-sky-600 text-sm">Speak at a moderate pace, articulate your words, and avoid filler words like "um" and "uh".</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-sky-100 text-sky-600 mr-3 flex-shrink-0">
+                                        <i class="bi bi-clock"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sky-800 font-medium">Response Length</p>
+                                        <p class="text-sky-600 text-sm">Aim for 1-2 minute responses. Be concise but thorough.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-sky-100 text-sky-600 mr-3 flex-shrink-0">
+                                        <i class="bi bi-star"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sky-800 font-medium">STAR Method</p>
+                                        <p class="text-sky-600 text-sm">Structure your answers using Situation, Task, Action, and Result for behavioral questions.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 p-3 bg-sky-50/50 rounded-lg">
+                                <p class="text-sky-700 text-sm"><i class="bi bi-info-circle mr-1"></i> Your interview performance will be analyzed based on content, delivery, body language, and overall impression.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interview Session (Initially Hidden) -->
+                    <div id="interview-session" class="hidden">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="glassmorphism-card p-6">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-lg font-semibold text-sky-800">Interview in Progress</h3>
+                                    <div class="flex items-center">
+                                        <span id="interview-timer" class="text-sky-700 font-medium">15:00</span>
+                                        <button id="pause-interview" class="ml-2 text-sky-600 hover:text-sky-800">
+                                            <i class="bi bi-pause-circle"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="webcam-container aspect-video mb-4">
+                                    <video id="interview-video" class="w-full h-full object-cover rounded-lg" autoplay muted></video>
+                                    <div id="recording-indicator" class="absolute top-3 right-3 flex items-center bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                                        <span class="w-3 h-3 bg-red-500 rounded-full pulse mr-2"></span>
+                                        Recording
+                                    </div>
+                                </div>
+                                
+                                <div class="flex space-x-2 mb-4">
+                                    <button id="mic-toggle" class="flex-1 py-2 rounded-lg bg-white/30 text-sky-700 hover:bg-white/40">
+                                        <i class="bi bi-mic-fill mr-1"></i> Mute
+                                    </button>
+                                    <button id="camera-toggle" class="flex-1 py-2 rounded-lg bg-white/30 text-sky-700 hover:bg-white/40">
+                                        <i class="bi bi-camera-video-fill mr-1"></i> Turn Off
+                                    </button>
+                                    <button id="end-interview" class="flex-1 py-2 rounded-lg bg-red-100 text-red-700 hover:bg-red-200">
+                                        <i class="bi bi-x-circle mr-1"></i> End
+                                    </button>
+                                </div>
+                                
+                                <div>
+                                    <p class="font-medium text-sky-800 mb-2">Current Question:</p>
+                                    <div id="current-question" class="p-4 bg-white/30 rounded-lg mb-3">
+                                        <p class="text-sky-800">Tell me about a challenging project you worked on and how you overcame obstacles to complete it.</p>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <button id="previous-question" class="px-4 py-2 rounded-lg bg-white/20 text-sky-700 disabled:opacity-50">
+                                            <i class="bi bi-arrow-left mr-1"></i> Previous
+                                        </button>
+                                        <button id="next-question" class="px-4 py-2 rounded-lg bg-white/20 text-sky-700">
+                                            Next <i class="bi bi-arrow-right ml-1"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="glassmorphism-card p-6">
+                                <h3 class="text-lg font-semibold text-sky-800 mb-4">Real-time Feedback</h3>
+                                
+                                <div class="space-y-4 mb-6">
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-sky-700">Body Language</span>
+                                            <span id="body-language-score" class="text-sky-800 font-medium">85%</span>
+                                        </div>
+                                        <div class="meter-container">
+                                            <div class="meter-fill bg-gradient-to-r from-sky-400 to-sky-600" style="width: 85%"></div>
+                                        </div>
+                                        <p class="text-xs text-sky-600 mt-1">Good posture and eye contact. Try to reduce hand fidgeting.</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-sky-700">Speaking Pace</span>
+                                            <span id="pace-score" class="text-sky-800 font-medium">72%</span>
+                                        </div>
+                                        <div class="meter-container">
+                                            <div class="meter-fill bg-gradient-to-r from-sky-400 to-sky-600" style="width: 72%"></div>
+                                        </div>
+                                        <p class="text-xs text-sky-600 mt-1">Good pace overall. Try to slow down when explaining technical concepts.</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-sky-700">Content Quality</span>
+                                            <span id="content-score" class="text-sky-800 font-medium">90%</span>
+                                        </div>
+                                        <div class="meter-container">
+                                            <div class="meter-fill bg-gradient-to-r from-sky-400 to-sky-600" style="width: 90%"></div>
+                                        </div>
+                                        <p class="text-xs text-sky-600 mt-1">Excellent details and examples. Well-structured response.</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-sky-700">Filler Words</span>
+                                            <span id="filler-score" class="text-sky-800 font-medium">65%</span>
+                                        </div>
+                                        <div class="meter-container">
+                                            <div class="meter-fill bg-gradient-to-r from-yellow-400 to-yellow-600" style="width: 65%"></div>
+                                        </div>
+                                        <p class="text-xs text-sky-600 mt-1">Try to reduce use of "um", "like", and "you know".</p>
+                                    </div>
+                                </div>
+                                
+                                <div id="live-suggestions" class="p-4 bg-sky-50/50 rounded-lg mb-4">
+                                    <p class="text-sky-800 font-medium mb-2">Suggestions for improvement:</p>
+                                    <ul class="text-sky-700 text-sm space-y-2">
+                                        <li><i class="bi bi-check-circle-fill text-green-500 mr-1"></i> Great use of the STAR method in your answer.</li>
+                                        <li><i class="bi bi-exclamation-circle-fill text-yellow-500 mr-1"></i> Try to make more eye contact with the camera.</li>
+                                        <li><i class="bi bi-info-circle-fill text-sky-500 mr-1"></i> Consider adding more specific metrics or results.</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="bg-white/20 p-3 rounded-lg">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sky-800 font-medium">Overall Performance</span>
+                                        <span id="overall-interview-score" class="text-sky-800 font-medium">78%</span>
+                                    </div>
+                                    <div class="meter-container h-4">
+                                        <div class="meter-fill bg-gradient-to-r from-sky-400 to-sky-600" style="width: 78%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interview Results (Initially Hidden) -->
+                    <div id="interview-results" class="hidden mt-8">
+                        <div class="glassmorphism-card p-6 text-center mb-6">
+                            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-sky-100 text-sky-600 mb-4">
+                                <i class="bi bi-trophy text-3xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-sky-800 mb-2">Interview Completed!</h3>
+                            <p class="text-sky-700 mb-4">You've successfully completed your mock interview. Review your performance below.</p>
+                            <div class="inline-block mx-auto">
+                                <div class="flex items-center justify-center">
+                                    <div class="relative w-32 h-32">
+                                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                                            <circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" />
+                                            <circle class="text-sky-500" stroke-width="10" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50" stroke-dasharray="251.2" stroke-dashoffset="55.26" />
+                                        </svg>
+                                        <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                                            <span class="text-3xl font-bold text-sky-800">78%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-sky-700 mt-2">Overall Performance</p>
+                            </div>
+                        </div>
+                        
+                        <div class="glassmorphism-card p-6 mb-6">
+                            <h3 class="text-lg font-semibold text-sky-800 mb-4">Detailed Analysis</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <h4 class="font-medium text-sky-800 mb-3">Strengths</h4>
+                                    <ul class="space-y-2">
+                                        <li class="flex items-start">
+                                            <i class="bi bi-check-circle-fill text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-sky-700">Strong technical knowledge demonstrated in answers</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="bi bi-check-circle-fill text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-sky-700">Well-structured responses using the STAR method</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="bi bi-check-circle-fill text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-sky-700">Good examples of problem-solving abilities</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="bi bi-check-circle-fill text-green-500 mt-1 mr-2"></i>
+                                            <span class="text-sky-700">Professional appearance and setting</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <div>
+                                    <h4 class="font-medium text-sky-800 mb-3">Areas for Improvement</h4>
+                                    <ul class="space-y-2">
+                                        <li class="flex items-start">
+                                            <i class="bi bi-exclamation-circle-fill text-yellow-500 mt-1 mr-2"></i>
+                                            <span class="text-sky-700">Reduce filler words like "um" and "like"</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="bi bi-exclamation-circle-fill text-yellow-500 mt-1 mr-2"></i>
+                                            <span class="text-sky-700">Improve eye contact with the interviewer/camera</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="bi bi-exclamation-circle-fill text-yellow-500 mt-1 mr-2"></i>
+                                            <span class="text-sky-700">Include more quantifiable results in examples</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="bi bi-exclamation-circle-fill text-yellow-500 mt-1 mr-2"></i>
+                                            <span class="text-sky-700">Work on concise answers for technical questions</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h4 class="font-medium text-sky-800 mb-3">Question-by-Question Analysis</h4>
+                                <div class="space-y-4">
+                                    <div class="p-4 bg-white/20 rounded-lg">
+                                        <p class="font-medium text-sky-800">Q1: Tell me about yourself and your background.</p>
+                                        <div class="flex justify-between items-center my-2">
+                                            <span class="text-sky-700">Score:</span>
+                                            <div class="flex items-center">
+                                                <div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden mr-2">
+                                                    <div class="h-full bg-gradient-to-r from-sky-400 to-sky-600" style="width: 85%"></div>
+                                                </div>
+                                                <span class="text-sky-800">85%</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-sky-700 text-sm">Good introduction covering education and experience. Could be more concise and highlight key achievements earlier.</p>
+                                    </div>
+                                    
+                                    <div class="p-4 bg-white/20 rounded-lg">
+                                        <p class="font-medium text-sky-800">Q2: Describe a challenging project you worked on.</p>
+                                        <div class="flex justify-between items-center my-2">
+                                            <span class="text-sky-700">Score:</span>
+                                            <div class="flex items-center">
+                                                <div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden mr-2">
+                                                    <div class="h-full bg-gradient-to-r from-sky-400 to-sky-600" style="width: 92%"></div>
+                                                </div>
+                                                <span class="text-sky-800">92%</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-sky-700 text-sm">Excellent use of the STAR method with clear problem, actions, and results. Great technical details.</p>
+                                    </div>
+                                    
+                                    <div class="p-4 bg-white/20 rounded-lg">
+                                        <p class="font-medium text-sky-800">Q3: How do you handle tight deadlines?</p>
+                                        <div class="flex justify-between items-center my-2">
+                                            <span class="text-sky-700">Score:</span>
+                                            <div class="flex items-center">
+                                                <div class="w-24 h-2 bg-gray-200 rounded-full overflow-hidden mr-2">
+                                                    <div class="h-full bg-gradient-to-r from-sky-400 to-sky-600" style="width: 78%"></div>
+                                                </div>
+                                                <span class="text-sky-800">78%</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-sky-700 text-sm">Good strategies mentioned but example was somewhat vague. Would benefit from specific time management techniques.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="font-medium text-sky-800 mb-3">Recommended Resources</h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <a href="#" class="p-3 bg-white/30 rounded-lg hover:bg-white/40 flex items-center">
+                                        <i class="bi bi-journal-text text-sky-600 text-xl mr-3"></i>
+                                        <span class="text-sky-700">Communication Skills Workshop</span>
+                                    </a>
+                                    <a href="#" class="p-3 bg-white/30 rounded-lg hover:bg-white/40 flex items-center">
+                                        <i class="bi bi-camera-video text-sky-600 text-xl mr-3"></i>
+                                        <span class="text-sky-700">Body Language Masterclass</span>
+                                    </a>
+                                    <a href="#" class="p-3 bg-white/30 rounded-lg hover:bg-white/40 flex items-center">
+                                        <i class="bi bi-question-circle text-sky-600 text-xl mr-3"></i>
+                                        <span class="text-sky-700">Technical Interview Practice</span>
+                                    </a>
+                                    <a href="#" class="p-3 bg-white/30 rounded-lg hover:bg-white/40 flex items-center">
+                                        <i class="bi bi-person-workspace text-sky-600 text-xl mr-3"></i>
+                                        <span class="text-sky-700">Industry-Specific Prep Guide</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
+                            <button id="watch-recording-btn" class="flex-1 btn-outline px-6 py-3 rounded-lg">
+                                <i class="bi bi-play-circle mr-2"></i>Watch Interview Recording
+                            </button>
+                            <button id="download-report-btn" class="flex-1 btn-outline px-6 py-3 rounded-lg">
+                                <i class="bi bi-download mr-2"></i>Download Full Report
+                            </button>
+                            <button id="new-interview-btn" class="flex-1 btn-primary text-white px-6 py-3 rounded-lg">
+                                <i class="bi bi-arrow-repeat mr-2"></i>Start New Interview
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Tab -->
+            <div id="dashboard-section" class="hidden">
+                <div class="glassmorphism p-6 md:p-10 mb-10">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                        <h2 class="text-2xl font-semibold text-sky-800">Your Job Matching Dashboard</h2>
+                        <div class="mt-4 md:mt-0">
+                            <button class="btn-outline px-4 py-2 rounded-lg mr-2">
+                                <i class="bi bi-download mr-1"></i> Export Report
+                            </button>
+                            <button class="btn-primary text-white px-4 py-2 rounded-lg">
+                                <i class="bi bi-arrow-repeat mr-1"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Summary Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="glassmorphism-card p-5">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-sky-600">Job Matches</p>
+                                    <h3 class="text-2xl font-bold text-sky-800">26</h3>
+                                </div>
+                                <div class="w-10 h-10 flex items-center justify-center rounded-full bg-sky-100 text-sky-600">
+                                    <i class="bi bi-briefcase-fill"></i>
+                                </div>
+                            </div>
+                            <p class="text-sky-600 text-sm mt-2">+5 new matches this week</p>
+                        </div>
+                        
+                        <div class="glassmorphism-card p-5">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-sky-600">Applications</p>
+                                    <h3 class="text-2xl font-bold text-sky-800">12</h3>
+                                </div>
+                                <div class="w-10 h-10 flex items-center justify-center rounded-full bg-sky-100 text-sky-600">
+                                    <i class="bi bi-send-fill"></i>
+                                </div>
+                            </div>
+                            <p class="text-sky-600 text-sm mt-2">2 pending responses</p>
+                        </div>
+                        
+                        <div class="glassmorphism-card p-5">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-sky-600">Interviews</p>
+                                    <h3 class="text-2xl font-bold text-sky-800">4</h3>
+                                </div>
+                                <div class="w-10 h-10 flex items-center justify-center rounded-full bg-sky-100 text-sky-600">
+                                    <i class="bi bi-calendar-check-fill"></i>
+                                </div>
+                            </div>
+                            <p class="text-sky-600 text-sm mt-2">Next interview in 3 days</p>
+                        </div>
+                        
+                        <div class="glassmorphism-card p-5">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-sky-600">Match Score</p>
+                                    <h3 class="text-2xl font-bold text-sky-800">78%</h3>
+                                </div>
+                                <div class="w-10 h-10 flex items-center justify-center rounded-full bg-sky-100 text-sky-600">
+                                    <i class="bi bi-graph-up-arrow"></i>
+                                </div>
+                            </div>
+                            <p class="text-sky-600 text-sm mt-2">+12% from last resume update</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Match Chart and Activity -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        <div class="lg:col-span-2 glassmorphism-card p-6">
+                            <h3 class="text-lg font-semibold text-sky-800 mb-4">Job Match Trends</h3>
+                            <div class="h-64 bg-white/20 rounded-lg flex items-center justify-center">
+                                <!-- This would be a chart in a real app -->
+                                <p class="text-sky-600">Chart showing job match trends over time</p>
+                            </div>
+                            <div class="mt-4 grid grid-cols-3 gap-4 text-center">
+                                <div>
+                                    <p class="text-sky-700 font-medium">Top Industry</p>
+                                    <p class="text-sky-600">Tech</p>
+                                </div>
+                                <div>
+                                    <p class="text-sky-700 font-medium">Top Position</p>
+                                    <p class="text-sky-600">Software Developer</p>
+                                </div>
+                                <div>
+                                    <p class="text-sky-700 font-medium">Avg. Salary Range</p>
+                                    <p class="text-sky-600">$75K - $95K</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="glassmorphism-card p-6">
+                            <h3 class="text-lg font-semibold text-sky-800 mb-4">Recent Activity</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-green-100 text-green-600 mr-3 flex-shrink-0">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sky-800">Resume analyzed successfully</p>
+                                        <p class="text-sky-600 text-sm">2 hours ago</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 mr-3 flex-shrink-0">
+                                        <i class="bi bi-briefcase-fill"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sky-800">Applied to Software Engineer at Tech Innovations</p>
+                                        <p class="text-sky-600 text-sm">1 day ago</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600 mr-3 flex-shrink-0">
+                                        <i class="bi bi-bell-fill"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sky-800">New job match alert</p>
+                                        <p class="text-sky-600 text-sm">2 days ago</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-purple-100 text-purple-600 mr-3 flex-shrink-0">
+                                        <i class="bi bi-camera-video-fill"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sky-800">Completed mock interview session</p>
+                                        <p class="text-sky-600 text-sm">2 days ago</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 flex items-center justify-center rounded-full bg-purple-100 text-purple-600 mr-3 flex-shrink-0">
+                                        <i class="bi bi-calendar-event-fill"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sky-800">Interview scheduled with Data Insights Co.</p>
+                                        <p class="text-sky-600 text-sm">3 days ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Job Application Tracker -->
+                    <div class="glassmorphism-card p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-semibold text-sky-800">Job Application Tracker</h3>
+                            <button class="btn-outline px-3 py-1 rounded-lg text-sm">
+                                <i class="bi bi-plus mr-1"></i> Add Application
+                            </button>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr class="border-b border-sky-200">
+                                        <th class="py-2 px-4 text-left text-sky-700">Company</th>
+                                        <th class="py-2 px-4 text-left text-sky-700">Position</th>
+                                        <th class="py-2 px-4 text-left text-sky-700">Applied Date</th>
+                                        <th class="py-2 px-4 text-left text-sky-700">Status</th>
+                                        <th class="py-2 px-4 text-left text-sky-700">Match Score</th>
+                                        <th class="py-2 px-4 text-left text-sky-700">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-sky-100">
+                                        <td class="py-3 px-4 text-sky-800">Tech Innovations Inc</td>
+                                        <td class="py-3 px-4 text-sky-800">Software Engineer</td>
+                                        <td class="py-3 px-4 text-sky-600">May 15, 2023</td>
+                                        <td class="py-3 px-4">
+                                            <span class="px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 text-xs">In Review</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-sky-800">92%</td>
+                                        <td class="py-3 px-4">
+                                            <button class="text-sky-600 hover:text-sky-800 mr-2"><i class="bi bi-eye"></i></button>
+                                            <button class="text-sky-600 hover:text-sky-800"><i class="bi bi-pencil"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b border-sky-100">
+                                        <td class="py-3 px-4 text-sky-800">Data Insights Co.</td>
+                                        <td class="py-3 px-4 text-sky-800">Data Analyst</td>
+                                        <td class="py-3 px-4 text-sky-600">May 10, 2023</td>
+                                        <td class="py-3 px-4">
+                                            <span class="px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs">Interview</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-sky-800">85%</td>
+                                        <td class="py-3 px-4">
+                                            <button class="text-sky-600 hover:text-sky-800 mr-2"><i class="bi bi-eye"></i></button>
+                                            <button class="text-sky-600 hover:text-sky-800"><i class="bi bi-pencil"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b border-sky-100">
+                                        <td class="py-3 px-4 text-sky-800">Future Technologies</td>
+                                        <td class="py-3 px-4 text-sky-800">Web Developer</td>
+                                        <td class="py-3 px-4 text-sky-600">May 5, 2023</td>
+                                        <td class="py-3 px-4">
+                                            <span class="px-2 py-1 rounded-full bg-red-100 text-red-800 text-xs">Rejected</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-sky-800">67%</td>
+                                        <td class="py-3 px-4">
+                                            <button class="text-sky-600 hover:text-sky-800 mr-2"><i class="bi bi-eye"></i></button>
+                                            <button class="text-sky-600 hover:text-sky-800"><i class="bi bi-pencil"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Interview Performance -->
+                    <div class="glassmorphism-card p-6 mt-8">
+                        <h3 class="text-lg font-semibold text-sky-800 mb-4">Interview Performance</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-white/20 p-4 rounded-lg">
+                                <h4 class="font-medium text-sky-800 mb-3">Recent Mock Interviews</h4>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-sky-800">Software Engineering (Technical)</p>
+                                            <p class="text-sky-600 text-sm">2 days ago</p>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="w-16 h-2 bg-gray-200 rounded-full overflow-hidden mr-2">
+                                                <div class="h-full bg-gradient-to-r from-sky-400 to-sky-600" style="width: 78%"></div>
+                                            </div>
+                                            <span class="text-sky-800 text-sm">78%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-sky-800">HR Interview (Behavioral)</p>
+                                            <p class="text-sky-600 text-sm">1 week ago</p>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="w-16 h-2 bg-gray-200 rounded-full overflow-hidden mr-2">
+                                                <div class="h-full bg-gradient-to-r from-sky-400 to-sky-600" style="width: 85%"></div>
+                                            </div>
+                                            <span class="text-sky-800 text-sm">85%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-sky-800">Product Management (Case Study)</p>
+                                            <p class="text-sky-600 text-sm">2 weeks ago</p>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="w-16 h-2 bg-gray-200 rounded-full overflow-hidden mr-2">
+                                                <div class="h-full bg-gradient-to-r from-sky-400 to-sky-600" style="width: 72%"></div>
+                                            </div>
+                                            <span class="text-sky-800 text-sm">72%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex justify-center">
+                                    <button class="text-sky-600 border border-sky-300 px-4 py-1 rounded-lg hover:bg-sky-50">
+                                        View All Interviews
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white/20 p-4 rounded-lg">
+                                <h4 class="font-medium text-sky-800 mb-3">Improvement Areas</h4>
+                                <div>
+                                    <div class="mb-3">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-sky-700">Technical Knowledge</span>
+                                            <span class="text-sky-800 text-sm">85%</span>
+                                        </div>
+                                        <div class="meter-container">
+                                            <div class="meter-fill bg-gradient-to-r from-sky-400 to-sky-600" style="width: 85%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-sky-700">Communication</span>
+                                            <span class="text-sky-800 text-sm">78%</span>
+                                        </div>
+                                        <div class="meter-container">
+                                            <div class="meter-fill bg-gradient-to-r from-sky-400 to-sky-600" style="width: 78%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-sky-700">Problem Solving</span>
+                                            <span class="text-sky-800 text-sm">82%</span>
+                                        </div>
+                                        <div class="meter-container">
+                                            <div class="meter-fill bg-gradient-to-r from-sky-400 to-sky-600" style="width: 82%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="text-sky-700">Body Language</span>
+                                            <span class="text-sky-800 text-sm">68%</span>
+                                        </div>
+                                        <div class="meter-container">
+                                            <div class="meter-fill bg-gradient-to-r from-yellow-400 to-yellow-600" style="width: 68%"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 text-sm text-sky-700">
+                                        <p><i class="bi bi-info-circle mr-1"></i> Recommended: Work on body language and practice more technical interviews</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="mt-16 text-center text-sky-600 text-sm">
+            <p>© 2023 College Placement Portal - AI Job Matching Tool</p>
+            <p class="mt-2">Need help? Contact the placement office</p>
+        </footer>
+    </div>
+    
+    <!-- Notification -->
+    <div id="notification" class="notification fixed bottom-6 right-6 glassmorphism p-4 hidden z-50">
+        <div class="flex items-start">
+            <div class="bg-white/40 w-10 h-10 flex items-center justify-center rounded-full text-sky-600 mr-3 flex-shrink-0">
+                <i class="bi bi-bell-fill"></i>
+            </div>
+            <div class="mr-8">
+                <h4 class="font-medium text-sky-800 mb-1" id="notification-title">Analysis Complete</h4>
+                <p class="text-sm text-sky-600" id="notification-message">Your resume has been successfully analyzed.</p>
+            </div>
+            <button id="close-notification" class="text-sky-500 hover:text-sky-700">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile navigation
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Tab Navigation
+            const matchTab = document.getElementById('match-tab');
+            const buildTab = document.getElementById('build-tab');
+            const interviewTab = document.getElementById('interview-tab');
+            const dashboardTab = document.getElementById('dashboard-tab');
+            
+            const matchSection = document.getElementById('match-section');
+            const builderSection = document.getElementById('builder-section');
+            const interviewSection = document.getElementById('interview-section');
+            const dashboardSection = document.getElementById('dashboard-section');
+            
+            matchTab.addEventListener('click', () => {
+                setActiveTab(matchTab, matchSection);
+            });
+            
+            buildTab.addEventListener('click', () => {
+                setActiveTab(buildTab, builderSection);
+            });
+            
+            interviewTab.addEventListener('click', () => {
+                setActiveTab(interviewTab, interviewSection);
+            });
+            
+            dashboardTab.addEventListener('click', () => {
+                setActiveTab(dashboardTab, dashboardSection);
+            });
+            
+            function setActiveTab(tab, section) {
+                // Reset all tabs
+                [matchTab, buildTab, interviewTab, dashboardTab].forEach(t => t.classList.remove('active'));
+                [matchSection, builderSection, interviewSection, dashboardSection].forEach(s => s.classList.add('hidden'));
+                
+                // Set active tab
+                tab.classList.add('active');
+                section.classList.remove('hidden');
+            }
+            
+            // Elements for file upload
+            const uploadContainer = document.getElementById('upload-container');
+            const fileInput = document.getElementById('file-input');
+            const browseBtn = document.getElementById('browse-btn');
+            const uploadedFile = document.getElementById('uploaded-file');
+            const fileName = document.getElementById('file-name');
+            const fileSize = document.getElementById('file-size');
+            const removeFileBtn = document.getElementById('remove-file');
+            const analyzeBtn = document.getElementById('analyze-btn');
+            const loadingSection = document.getElementById('loading');
+            const resultsContainer = document.getElementById('results-container');
+            const noResults = document.getElementById('no-results');
+            const tryAgainBtn = document.getElementById('try-again-btn');
+            const buildResumeBtn = document.getElementById('build-resume-btn');
+            const skillsContainer = document.getElementById('skills-container');
+            const resumeAnalysis = document.getElementById('resume-analysis');
+            const jobMatches = document.getElementById('job-matches');
+            const progressBarFill = document.getElementById('progress-bar-fill');
+            const progressPercentage = document.getElementById('progress-percentage');
+            const notification = document.getElementById('notification');
+            const notificationTitle = document.getElementById('notification-title');
+            const notificationMessage = document.getElementById('notification-message');
+            const closeNotification = document.getElementById('close-notification');
+            
+            let currentFile = null;
+            
+            // Setup event listeners
+            if (uploadContainer) {
+                uploadContainer.addEventListener('click', () => fileInput.click());
+                uploadContainer.addEventListener('dragover', handleDragOver);
+                uploadContainer.addEventListener('dragleave', handleDragLeave);
+                uploadContainer.addEventListener('drop', handleDrop);
+            }
+            
+            if (fileInput) {
+                fileInput.addEventListener('change', handleFileSelect);
+            }
+            
+            if (browseBtn) {
+                browseBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    fileInput.click();
+                });
+            }
+            
+            if (removeFileBtn) {
+                removeFileBtn.addEventListener('click', removeFile);
+            }
+            
+            if (analyzeBtn) {
+                analyzeBtn.addEventListener('click', analyzeResume);
+            }
+            
+            if (tryAgainBtn) {
+                tryAgainBtn.addEventListener('click', resetApp);
+            }
+            
+            if (buildResumeBtn) {
+                buildResumeBtn.addEventListener('click', () => {
+                    resetApp();
+                    setActiveTab(buildTab, builderSection);
+                });
+            }
+            
+            if (closeNotification) {
+                closeNotification.addEventListener('click', () => {
+                    notification.classList.add('hidden');
+                });
+            }
+            
+            // Mock Interview section
+            const startInterviewBtn = document.getElementById('start-interview-btn');
+            const interviewSession = document.getElementById('interview-session');
+            const interviewResults = document.getElementById('interview-results');
+            const interviewVideo = document.getElementById('interview-video');
+            const endInterviewBtn = document.getElementById('end-interview');
+            const newInterviewBtn = document.getElementById('new-interview-btn');
+            
+            if (startInterviewBtn) {
+                startInterviewBtn.addEventListener('click', startMockInterview);
+            }
+            
+            if (endInterviewBtn) {
+                endInterviewBtn.addEventListener('click', endMockInterview);
+            }
+            
+            if (newInterviewBtn) {
+                newInterviewBtn.addEventListener('click', resetMockInterview);
+            }
+            
+            // Functions for file upload
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadContainer.classList.add('bg-sky-50/30');
+            }
+            
+            function handleDragLeave(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadContainer.classList.remove('bg-sky-50/30');
+            }
+            
+            function handleDrop(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                uploadContainer.classList.remove('bg-sky-50/30');
+                
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length) {
+                    handleFiles(files[0]);
+                }
+            }
+            
+            function handleFileSelect(e) {
+                if (e.target.files.length) {
+                    handleFiles(e.target.files[0]);
+                }
+            }
+            
+            function handleFiles(file) {
+                // Check if file is valid (PDF, DOC, DOCX)
+                const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                if (!validTypes.includes(file.type)) {
+                    showNotification('Invalid File Format', 'Please upload a valid resume file (PDF, DOC, or DOCX)');
+                    return;
+                }
+                
+                // Store the file
+                currentFile = file;
+                
+                // Update UI
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                uploadedFile.classList.remove('hidden');
+                analyzeBtn.disabled = false;
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' bytes';
+                else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+                else return (bytes / 1048576).toFixed(1) + ' MB';
+            }
+            
+            function removeFile() {
+                currentFile = null;
+                uploadedFile.classList.add('hidden');
+                fileInput.value = '';
+                analyzeBtn.disabled = true;
+            }
+            
+            function resetApp() {
+                removeFile();
+                resultsContainer.classList.add('hidden');
+                noResults.classList.add('hidden');
+            }
+            
+            function showNotification(title, message) {
+                notificationTitle.textContent = title;
+                notificationMessage.textContent = message;
+                notification.classList.remove('hidden');
+                
+                // Auto hide after 5 seconds
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 5000);
+            }
+            
+            async function analyzeResume() {
+                if (!currentFile) return;
+                
+                // Show loading state
+                loadingSection.classList.remove('hidden');
+                uploadedFile.classList.add('hidden');
+                analyzeBtn.disabled = true;
+                
+                // Simulate loading progress
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(progressInterval);
+                    }
+                    progressBarFill.style.width = `${progress}%`;
+                    progressPercentage.textContent = `${Math.round(progress)}%`;
+                }, 600);
+                
+                try {
+                    // Convert the file to base64 for sending to the AI API
+                    const base64File = await fileToBase64(currentFile);
+                    
+                    // Simulate API delay for demo purposes
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+                    
+                    // Prepare the request to the AI service
+                    const payload = {
+                        messages: [
+                            {
+                                role: "user",
+                                content: [
+                                    {
+                                        type: "text",
+                                        text: "Analyze this resume and extract key skills, experience, education, and suggest matching job positions. Provide a brief summary of the candidate's profile."
+                                    },
+                                    {
+                                        type: "image_url",
+                                        image_url: {
+                                            url: base64File
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    };
+                    
+                    // In a real application, this would be a real API call
+                    // For this demo, we'll simulate a successful response
+                    clearInterval(progressInterval);
+                    progressBarFill.style.width = '100%';
+                    progressPercentage.textContent = '100%';
+                    
+                    // Generate mock data
+                    const mockSkills = ['JavaScript', 'React.js', 'Node.js', 'Python', 'SQL', 'Data Analysis', 'Problem Solving'];
+                    const mockAnalysis = "The candidate has a strong background in software development with 3+ years of experience. They possess a Bachelor's degree in Computer Science and have worked on several web development projects. Their technical skills include JavaScript, React.js, Node.js, and Python. The candidate shows proficiency in both frontend and backend development, making them suitable for full-stack roles. Their experience with data analysis tools also makes them a good fit for data-focused positions.";
+                    const mockJobs = generateMockJobs(mockSkills);
+                    
+                    // Populate results
+                    populateResults(mockSkills, mockAnalysis, mockJobs);
+                    
+                    // Show results
+                    loadingSection.classList.add('hidden');
+                    
+                    if (mockJobs.length > 0) {
+                        resultsContainer.classList.remove('hidden');
+                        noResults.classList.add('hidden');
+                        showNotification('Analysis Complete', 'We found several job matches for your resume!');
+                    } else {
+                        resultsContainer.classList.add('hidden');
+                        noResults.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    console.error('Error analyzing resume:', error);
+                    clearInterval(progressInterval);
+                    loadingSection.classList.add('hidden');
+                    showNotification('Error', 'There was an error analyzing your resume. Please try again.');
+                    analyzeBtn.disabled = false;
+                    uploadedFile.classList.remove('hidden');
+                }
+            }
+            
+            function fileToBase64(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+            }
+            
+            function generateMockJobs(skills) {
+                const jobTitles = [
+                    "Software Developer", "Data Analyst", "Full Stack Engineer",
+                    "Project Manager", "UX/UI Designer", "Machine Learning Engineer",
+                    "DevOps Engineer", "Product Manager", "Business Analyst",
+                    "Quality Assurance Engineer"
+                ];
+                
+                const companies = [
+                    "Tech Innovations Inc", "Data Insights Co.", "Global Solutions",
+                    "Next Gen Systems", "Future Technologies", "Insight Analytics",
+                    "CloudScale Solutions", "Digital Transformers", "Smart Systems Inc",
+                    "Innovation Labs"
+                ];
+                
+                const locations = [
+                    "New York, NY", "San Francisco, CA", "Boston, MA",
+                    "Austin, TX", "Seattle, WA", "Chicago, IL",
+                    "Remote", "Denver, CO", "Atlanta, GA",
+                    "Los Angeles, CA"
+                ];
+                
+                // Generate 5 job matches
+                const jobs = [];
+                for (let i = 0; i < 5; i++) {
+                    const matchScore = 95 - (i * 5);
+                    const jobSkills = [...skills].sort(() => 0.5 - Math.random()).slice(0, 4);
+                    const salary = 70000 + (Math.floor(Math.random() * 6) * 10000);
+                    
+                    jobs.push({
+                        id: i + 1,
+                        title: jobTitles[i % jobTitles.length],
+                        company: companies[i % companies.length],
+                        location: locations[i % locations.length],
+                        matchScore: matchScore,
+                        skills: jobSkills,
+                        description: `This position requires expertise in ${jobSkills.slice(0, 2).join(', ')}. The ideal candidate will have ${2 + i} years of experience and a background in ${i % 2 === 0 ? 'computer science' : 'related technical field'}.`,
+                        salary: `$${salary.toLocaleString()} - $${(salary + 20000).toLocaleString()}`,
+                        type: i % 3 === 0 ? 'Remote' : i % 3 === 1 ? 'Hybrid' : 'On-site',
+                        postedAt: `${i + 1} days ago`
+                    });
+                }
+                
+                return jobs.sort((a, b) => b.matchScore - a.matchScore);
+            }
+            
+            function populateResults(skills, analysis, jobs) {
+                // Populate skills
+                skillsContainer.innerHTML = '';
+                skills.forEach(skill => {
+                    const skillTag = document.createElement('span');
+                    skillTag.className = 'px-3 py-1 rounded-full bg-sky-100 text-sky-700 text-sm';
+                    skillTag.textContent = skill;
+                    skillsContainer.appendChild(skillTag);
+                });
+                
+                // Populate analysis
+                resumeAnalysis.innerHTML = `<p>${analysis}</p>`;
+                
+                // Populate job matches
+                jobMatches.innerHTML = '';
+                
+                jobs.forEach(job => {
+                    const jobCard = document.createElement('div');
+                    jobCard.className = 'glassmorphism-card p-6';
+                    
+                    const matchScoreClass = 
+                        job.matchScore >= 90 ? 'bg-green-100 text-green-800' : 
+                        job.matchScore >= 80 ? 'bg-sky-100 text-sky-800' : 
+                        job.matchScore >= 70 ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800';
+                    
+                    jobCard.innerHTML = `
+                        <div class="flex justify-between items-start mb-3">
+                            <h3 class="text-xl font-semibold text-sky-800">${job.title}</h3>
+                            <span class="px-3 py-1 rounded-full ${matchScoreClass} text-sm font-medium">${job.matchScore}% Match</span>
+                        </div>
+                        <p class="text-sky-700 font-medium mb-1">${job.company}</p>
+                        <div class="flex flex-wrap items-center mb-3 text-sky-600">
+                            <span class="inline-flex items-center mr-4"><i class="bi bi-geo-alt mr-1"></i> ${job.location}</span>
+                            <span class="inline-flex items-center mr-4"><i class="bi bi-briefcase mr-1"></i> ${job.type}</span>
+                            <span class="inline-flex items-center"><i class="bi bi-clock mr-1"></i> ${job.postedAt}</span>
+                        </div>
+                        <p class="text-sky-700 mb-3">${job.description}</p>
+                        <p class="text-sky-700 mb-3"><i class="bi bi-cash-coin mr-1"></i> ${job.salary}</p>
+                        <div class="mb-4">
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                ${job.skills.map(skill => `<span class="px-2 py-1 rounded-full bg-white/50 text-sky-700 text-xs">${skill}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="flex-1 btn-primary text-white py-2 rounded-lg hover:shadow-md">Apply Now</button>
+                            <button class="px-4 py-2 bg-white/30 text-sky-700 rounded-lg hover:bg-white/40">
+                                <i class="bi bi-bookmark"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    jobMatches.appendChild(jobCard);
+                });
+                
+                // Set overall score (average of match scores)
+                const avgScore = jobs.reduce((sum, job) => sum + job.matchScore, 0) / jobs.length;
+                document.getElementById('overall-score').style.width = `${avgScore}%`;
+                document.getElementById('overall-score-text').textContent = `${Math.round(avgScore)}%`;
+            }
+            
+            // Mock Interview Functions
+            function startMockInterview() {
+                // Hide settings and show interview session
+                if (interviewSession) {
+                    interviewSession.classList.remove('hidden');
+                }
+                
+                // Access user webcam
+                if (interviewVideo && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                        .then(function(stream) {
+                            interviewVideo.srcObject = stream;
+                            
+                            // Start mock interview timer
+                            startInterviewTimer();
+                            
+                            // Show notification
+                            showNotification('Interview Started', 'Your mock interview session has begun. Good luck!');
+                        })
+                        .catch(function(error) {
+                            console.error('Error accessing webcam:', error);
+                            showNotification('Camera Error', 'Could not access your camera. Please check permissions and try again.');
+                        });
+                }
+            }
+            
+            function endMockInterview() {
+                // Stop webcam
+                if (interviewVideo && interviewVideo.srcObject) {
+                    const tracks = interviewVideo.srcObject.getTracks();
+                    tracks.forEach(track => track.stop());
+                    interviewVideo.srcObject = null;
+                }
+                
+                // Show results
+                if (interviewSession) {
+                    interviewSession.classList.add('hidden');
+                }
+                
+                if (interviewResults) {
+                    interviewResults.classList.remove('hidden');
+                }
+                
+                // Show notification
+                showNotification('Interview Complete', 'Your interview has been analyzed. Review your results below.');
+            }
+            
+            function resetMockInterview() {
+                // Reset to initial state
+                if (interviewResults) {
+                    interviewResults.classList.add('hidden');
+                }
+                
+                if (interviewSession) {
+                    interviewSession.classList.add('hidden');
+                }
+            }
+            
+            function startInterviewTimer() {
+                const timerDisplay = document.getElementById('interview-timer');
+                if (!timerDisplay) return;
+                
+                const duration = parseInt(document.getElementById('interview-duration').value) * 60;
+                let timer = duration;
+                
+                const intervalId = setInterval(() => {
+                    const minutes = parseInt(timer / 60, 10);
+                    const seconds = parseInt(timer % 60, 10);
+                    
+                    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    if (--timer < 0) {
+                        clearInterval(intervalId);
+                        endMockInterview();
+                    }
+                }, 1000);
+                
+                // Store interval ID to clear it if interview is ended early
+                timerDisplay.dataset.intervalId = intervalId;
+            }
+        });
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
